@@ -3,10 +3,12 @@ from flask import Flask, request, jsonify
 import numpy as np
 from scipy import stats
 from db import fetch_series
+from flask_cors import CORS
+
 
 app = Flask(__name__)
 
-
+CORS(app)
 # ─── Route 1 : Description statistique depuis MySQL ──────────────────────────
 @app.route('/db/stats/describe', methods=['GET'])
 def db_describe():

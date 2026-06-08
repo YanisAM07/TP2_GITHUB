@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Client Test — Service 3 Stats MySQL</title>
+  <style>
+    body { font-family: monospace; max-width: 900px; margin: 30px auto; background: #1e1e1e; color: #d4d4d4; padding: 20px; }
+    h1 { color: #569cd6; }
+    h2 { color: #9cdcfe; border-bottom: 1px solid #3c3c3c; padding-bottom: 6px; }
+    label { display: block; margin-top: 10px; color: #ce9178; }
+    input { background: #2d2d2d; border: 1px solid #555; color: #d4d4d4; padding: 6px 10px; width: 300px; border-radius: 4px; }
+    button { margin-top: 12px; padding: 8px 20px; background: #0e639c; color: white; border: none; border-radius: 4px; cursor: pointer; }
+    button:hover { background: #1177bb; }
+    pre { background: #2d2d2d; padding: 14px; border-radius: 6px; overflow-x: auto; color: #b5cea8; white-space: pre-wrap; }
+    .error { color: #f44747; }
+    .section { margin-bottom: 40px; }
+  </style>
+</head>
+<body>
+  <h1>🧪 Client Test — Service 3 : Stats MySQL</h1>
+  <p>Service tourne sur <code>http://localhost:5003</code></p>
+
+  <!-- ─── Test 1 : /db/stats/describe ─────────────────────────── -->
+  <div class="section">
+    <h2>GET /db/stats/describe</h2>
+    <label>Nom de la série :</label>
+    <input type="text" id="serie-describe" value="serie_A" placeholder="ex: serie_A">
+    <br>
+    <button onclick="testDescribe()">▶ Envoyer</button>
+    <pre id="result-describe">Résultat ici...</pre>
+  </div>
+
+  <!-- ─── Test 2 : /db/stats/correlation ──────────────────────── -->
+  <div class="section">
+    <h2>GET /db/stats/correlation</h2>
+    <label>Série X :</label>
+    <input type="text" id="serie-x" value="serie_A" placeholder="ex: serie_A">
+    <label>Série Y :</label>
+    <input type="text" id="serie-y" value="serie_B" placeholder="ex: serie_B">
+    <br>
+    <button onclick="testCorrelation()">▶ Envoyer</button>
+    <pre id="result-correlation">Résultat ici...</pre>
+  </div>
+
+  <script>
+    const BASE = 'http://localhost:5003';
+
+    async function testDescribe() {
+      const serie = document.getElementById('serie-describe').value.trim();
+      const el = document.getElementById('result-describe');
+      el.className = '';
+      try {
+        const res = await fetch(`${BASE}/db/stats/describe?serie=${encodeURIComponent(serie)}`);
+        const data = await res.json();
+        el.textContent = JSON.stringify(data, null, 2);
+        if (!res.ok) el.className = 'error';
+      } catch (err) {
+        el.className = 'error';
+        el.textContent = `Erreur réseau : ${err.message}\n(Le service Flask est-il lancé sur le port 5003 ?)`;
+      }
+    }
+
+    async function testCorrelation() {
+      const x = document.getElementById('serie-x').value.trim();
+      const y = document.getElementById('serie-y').value.trim();
+      const el = document.getElementById('result-correlation');
+      el.className = '';
+      try {
+        const res = await fetch(`${BASE}/db/stats/correlation?serie_x=${encodeURIComponent(x)}&serie_y=${encodeURIComponent(y)}`);
+        const data = await res.json();
+        el.textContent = JSON.stringify(data, null, 2);
+        if (!res.ok) el.className = 'error';
+      } catch (err) {
+        el.className = 'error';
+        el.textContent = `Erreur réseau : ${err.message}\n(Le service Flask est-il lancé sur le port 5003 ?)`;
+      }
+    }
+  </script>
+</body>
+</html>

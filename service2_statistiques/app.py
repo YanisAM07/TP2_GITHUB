@@ -34,5 +34,13 @@ def describe():
     except (ValueError, TypeError) as e:
         return jsonify({"erreur": str(e)}), 400
 
+@app.route('/stats/correlation', methods=['POST'])
+def correlation():
+    data = request.get_json()
+    try:
+        pass
+    except (ValueError, TypeError) as e:
+        return jsonify({'erreur': str(e)}), 400
+
 if __name__ == '__main__': 
     app.run(debug=True, port=5002) 

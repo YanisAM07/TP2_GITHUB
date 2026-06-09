@@ -43,3 +43,13 @@ print("\nDéterminant:")
 print(response.json())
 print(f"L'opération utilisée est {response.json()["operation"]}.")
 print(f"Le résultat du calcul A est {response.json()["resultat"]}.")
+
+url = "http://localhost:5001/matrices/inverse"
+
+response = requests.post(url, json=data)
+
+print("\nInverse:")
+print(response.json())
+print(f"L'opération utilisée est {response.json()["operation"]}.")
+print(f"Le résultat du calcul A est {response.json()["resultat"][0]}.")
+print(f"Le résultat du calcul B est {response.json()["resultat"][1]}.")

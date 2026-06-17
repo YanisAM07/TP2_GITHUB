@@ -2,6 +2,7 @@ import unittest
 import requests
 
 class TestStatsDescribe(unittest.TestCase):
+    """Classe de test pour le service 3, route describe"""
 
     URL = "http://localhost:5003/db/stats/describe"
     def test_stats_describe(self):

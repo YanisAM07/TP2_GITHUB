@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Test stats describe</title>
+</head>
+<body>
+
+<h2>Test stats describe</h2>
+<input type="text" id="serie" value="serie_A">
+<button onclick="testerAPI()">Tester</button>
+
+<pre id="resultat"></pre>
+
+<script>
+async function testerAPI() {
+    const serie = document.getElementById("serie").value;
+    // Récupére les valeurs
+    try {
+        const response = await fetch(
+            `http://localhost:5003/db/stats/describe?serie=${serie}`
+        );
+
+        const data = await response.json();
+        document.getElementById("resultat").textContent =
+            JSON.stringify(data, null, 4);
+
+        // Test simple
+        if (response.status === 200) {
+            console.assert(data.source === "mysql");
+            console.assert(
+                data.resultat.serie === serie,
+                "Nom de série incorrect"
+            );
+            console.assert(
+                data.resultat.n > 0,
+                "Nombre de valeurs invalide"
+            );
+            console.log("Tests OK");
+        }
+    }
+    catch(error) {
+        console.error(error);
+    }
+}
+</script>
+
+</body>
+</html>

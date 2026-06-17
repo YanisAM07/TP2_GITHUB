@@ -190,7 +190,7 @@ POST /stats/test_normalite
 
 ---
 
-## 4. Test t de Student
+## 4. Test de test Student
 
 ### Endpoint
 

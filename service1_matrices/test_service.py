@@ -1,0 +1,55 @@
+import requests
+
+url = "http://localhost:5001/matrices/add"
+
+data = {
+        "A": [[1,2],[3,4]],
+        "B": [[5,6],[7,8]]
+    }
+
+response = requests.post(url, json=data)
+
+print("Addition:")
+print(response.json())
+print(f"L'opération utilisée est {response.json()["operation"]}.")
+print(f"Le résultat du calcul A est {response.json()["resultat"][0]}.")
+print(f"Le résultat du calcul B est {response.json()["resultat"][1]}.")
+
+url = "http://localhost:5001/matrices/multiply"
+
+response = requests.post(url, json=data)
+
+print("\nMultiplication:")
+print(response.json())
+print(f"L'opération utilisée est {response.json()["operation"]}.")
+print(f"Le résultat du calcul A est {response.json()["resultat"][0]}.")
+print(f"Le résultat du calcul B est {response.json()["resultat"][1]}.")
+
+url = "http://localhost:5001/matrices/transpose"
+
+response = requests.post(url, json=data)
+
+print("\nTranspose:")
+print(response.json())
+print(f"L'opération utilisée est {response.json()["operation"]}.")
+print(f"Le résultat du calcul A est {response.json()["resultat"][0]}.")
+print(f"Le résultat du calcul B est {response.json()["resultat"][1]}.")
+
+url = "http://localhost:5001/matrices/determinant"
+
+response = requests.post(url, json=data)
+
+print("\nDéterminant:")
+print(response.json())
+print(f"L'opération utilisée est {response.json()["operation"]}.")
+print(f"Le résultat du calcul A est {response.json()["resultat"]}.")
+
+url = "http://localhost:5001/matrices/inverse"
+
+response = requests.post(url, json=data)
+
+print("\nInverse:")
+print(response.json())
+print(f"L'opération utilisée est {response.json()["operation"]}.")
+print(f"Le résultat du calcul A est {response.json()["resultat"][0]}.")
+print(f"Le résultat du calcul B est {response.json()["resultat"][1]}.")

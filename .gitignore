@@ -1,8 +1,29 @@
-.env
-__pycache__/
-*.pyc
-venv/
-.vscode/
-.idea
-.xml
-.iml
+# Environnements virtuels Python venv/ env/ .venv/ 
+
+# Fichiers de configuration sensibles 
+
+.env 
+
+*.env 
+
+# Fichiers Python compilés 
+
+__pycache__/ 
+
+*.pyc 
+
+*.pyo 
+
+# Fichiers d'éditeur 
+
+.vscode/ 
+
+.idea/ 
+
+*.swp 
+
+# Fichiers système 
+
+.DS_Store 
+
+Thumbs.db 

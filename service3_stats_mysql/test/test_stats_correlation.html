@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Test Corrélation</title>
+</head>
+<body>
+
+<h2>Test API Corrélation</h2>
+
+<input id="serieX" value="serie_A">
+<input id="serieY" value="serie_B">
+
+<button onclick="tester()">Tester</button>
+
+<pre id="resultat"></pre>
+
+<script>
+
+async function tester() {
+
+    const serieX = document.getElementById("serieX").value;
+    const serieY = document.getElementById("serieY").value;
+
+    const response = await fetch(
+        `http://localhost:5003/db/stats/correlation?serie_x=${serieX}&serie_y=${serieY}`
+    );
+
+    const data = await response.json();
+
+    document.getElementById("resultat").textContent =
+        JSON.stringify(data, null, 4);
+
+    if (response.status === 200) {
+
+        console.assert(
+            data.source === "mysql",
+            "Source incorrecte"
+        );
+
+        console.assert(
+            data.resultat.r >= -1 &&
+            data.resultat.r <= 1,
+            "Coefficient r invalide"
+        );
+
+        console.assert(
+            typeof data.resultat.significatif === "boolean",
+            "significatif doit être un booléen"
+        );
+
+        console.log("Tous les tests sont passés");
+    }
+}
+
+</script>
+
+</body>
+</html>

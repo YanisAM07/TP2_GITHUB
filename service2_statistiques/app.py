@@ -5,7 +5,7 @@ from scipy import stats
 app = Flask(__name__) 
 
 def validate_data(data, key='data'):     
-    """Valide si il ya des données dans le json"""     
+    """Valide et retourne une liste de nombres."""     
     if key not in data:         
         raise ValueError(f"Clé '{key}' manquante dans la requête")     
     values = data[key]     
@@ -15,7 +15,7 @@ def validate_data(data, key='data'):
 
 @app.route("/stats/describe", methods=["POST"])
 def describe():
-    """Renvoie différentes valeurs en utilisant des outils de calcul"""
+    """Renvoie une lsite de nombre lié utilisant des outils de mathématique sur l'echantillon fourni"""
     data = request.get_json()
     try:
         values = validate_data(data)
@@ -37,7 +37,7 @@ def describe():
 
 @app.route('/stats/correlation', methods=['POST'])
 def correlation():
-    """Renvoie différente informations lié a la corrélation des données"""
+    """Renvoie si les donnée corrèle"""
     data = request.get_json()
     try:
         values = validate_data(data)         
@@ -54,9 +54,33 @@ def correlation():
     except (ValueError, TypeError) as e:
         return jsonify({'erreur': str(e)}), 400
 
+@app.route('/stats/test_normalite', methods['POST'])
+def test_normalite():
+    """Renvoie si l'echnatillon de valeur est normale"""
+    data = request.get_json()
+    try:
+        values = validate_data(data)
+        if len(values) > 5000:
+            return jsonify({"erreur":"shapiro-Wilk limité à 5000 valeurs"}), 400
+        stat, p_value = stats.shapiro(values)
+        return jsonify({
+            "operation": "test_normalite_shapiro_wilk",
+            "resultats": {
+                "statistique": round(float(stat), 6),
+                "p_value": round(float(p_value), 6),
+                "est_normalite": bool(p_value > 0.05),
+                "interpretation" : (
+                    "Distribution normale (p > 0.05)" if p_value > 0.05 else 
+                    "Distribution non normale (p >= 0.05)"
+                )
+            }
+        })
+    except (ValueError, TimeoutError) as e:
+        return jsonify({"erreur": str(e)}), 400
+
 @app.route('/stats/test_student', methods=['POST']) 
 def test_student():
-    """Permet de comparer deux jeux de données différents"""
+    """Permet de comparer deux échantillon"""
     data = request.get_json()     
     try:
         groupe1 = validate_data(data, 'groupe1')         
@@ -64,10 +88,10 @@ def test_student():
         t_stat, p_value = stats.ttest_ind(groupe1, groupe2)         
         return jsonify({             'operation': 'test_t_student',
             'resultat': {
-                't_statistique': round(float(t_stat), 4),        # type: ignore
-                'p_value': round(float(p_value), 6),             # type: ignore
-                'difference_significative': bool(p_value < 0.05) # type: ignore
-            }})     
+                't_statistique': round(float(t_stat), 4),
+                'p_value': round(float(p_value), 6),
+                'difference_significative': bool(p_value < 0.05)
+            }         })     
     except (ValueError, TypeError) as e:
         return jsonify({'erreur': str(e)}), 400
 

@@ -73,7 +73,7 @@ def test_normalite():
                 "est_normalite": bool(p_value > 0.05),
                 "interpretation" : (
                     "Distribution normale (p > 0.05)" if p_value > 0.05 else 
-                    "Distribution non normale (p >= 0.05)"
+                    "Distribution non normale (p <= 0.05)"
                 )
             }
         })

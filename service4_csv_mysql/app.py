@@ -8,11 +8,12 @@ import io
 load_dotenv()
 app = Flask(__name__)
 
+# config format du csv
 COLONNES_REQUISES = {'nom_serie', 'valeur'}
 COLONNES_VALIDES = {'nom_serie', 'valeur', 'categorie', 'date_mesure'}
-TAILLE_MAX_OCTETS = 5 * 1024 * 1024  # 5 Mo
+TAILLE_MAX_OCTETS = 5 * 1024 * 1024  # Le fichier ne doit pas dépasser 5 Mo
 
-
+# lit les identifiants dans le .env et ouvre une connexion mysql
 def get_connection():
     return mysql.connector.connect(
         host=os.getenv('DB_HOST', 'localhost'),
@@ -22,6 +23,8 @@ def get_connection():
     )
 @app.route('/upload/csv', methods=['POST'])
 def upload_csv():
+
+    # vérif si le csv et présent et aux normes
 
     if 'file' not in request.files:
         return jsonify({'erreur': 'Aucun fichier envoyé (clé "file" manquante)'}), 400
@@ -34,6 +37,7 @@ def upload_csv():
     if not file.filename.endswith('.csv'):
         return jsonify({'erreur': 'Seuls les fichiers .csv sont acceptés'}), 400
 
+    # Lire le contenu CSV (mrc pandas)
     try:
         content = file.read()
 
@@ -45,6 +49,7 @@ def upload_csv():
     except Exception as e:
         return jsonify({'erreur': f'Lecture CSV impossible : {e}'}), 400
 
+    # encore une vérif mais pour les colonnes obligatoires
     colonnes_manquantes = COLONNES_REQUISES - set(df.columns)
     if colonnes_manquantes:
         return jsonify({
@@ -52,6 +57,7 @@ def upload_csv():
             'manquantes': list(colonnes_manquantes)
         }), 400
 
+    # Nettoyer les données ici on garde seulement les datas autorisé
     df = df[[c for c in df.columns if c in COLONNES_VALIDES]]
     df['valeur'] = pd.to_numeric(df['valeur'], errors='coerce')
 
@@ -61,9 +67,10 @@ def upload_csv():
     if df.empty:
         return jsonify({'erreur': 'Aucune ligne valide dans le CSV'}), 400
 
+    # Insérer dans MySQL
     try:
-        conn = get_connection()
-        cursor = conn.cursor()
+        conn = get_connection() # ouvre une connexion à la DB MySQL grâce aux info du .env
+        cursor = conn.cursor() # crée un curseur pour exécuter des requêtes SQL
 
         insertions = 0
 
@@ -87,6 +94,7 @@ def upload_csv():
     except Exception as e:
         return jsonify({'erreur': 'Erreur base de données', 'detail': str(e)}), 500
 
+    # Code 201 = "Created""
     return jsonify({
         'statut': 'success',
         'lignes_inserees': insertions,
@@ -97,7 +105,7 @@ def upload_csv():
 
 @app.route('/upload/series', methods=['GET'])
 def list_series():
-    """Retourne la liste des séries chargées et leur nombre de points."""
+    """Retourne la liste des séries chargées et leur nombre de points. json"""
     try:
         conn = get_connection()
         cursor = conn.cursor()

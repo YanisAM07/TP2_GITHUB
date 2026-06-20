@@ -204,7 +204,7 @@ def test_normalite():
                 )
             }
         })
-    except (ValueError, TimeoutError) as e:
+    except (ValueError, TypeError) as e:
         return jsonify({"erreur": str(e)}), 400
 
 @app.route('/stats/test_student', methods=['POST']) 

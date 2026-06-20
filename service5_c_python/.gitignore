@@ -1,0 +1,14 @@
+venv/
+env/
+.venv/
+
+__pycache__/
+*.pyc
+*.pyo
+
+lib/*
+!lib/.gitkeep
+
+*.o
+*.exe
+*.pdb
